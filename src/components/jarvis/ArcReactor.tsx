@@ -12,9 +12,38 @@ import { cn } from "@/lib/utils";
 
 // Nombre d'éléments de chaque anneau (du plus externe au plus interne).
 const ticks = Array.from({ length: 96 }, (_, i) => i);
-const segments = Array.from({ length: 30 }, (_, i) => i);
 const micro = Array.from({ length: 140 }, (_, i) => i);
-const blocks = Array.from({ length: 18 }, (_, i) => i);
+const outerMesh = Array.from({ length: 48 }, (_, i) => {
+  const angle = (i / 48) * Math.PI * 2;
+  const radius = 162 + Math.sin(i * 2.17) * 13;
+  return { x: 200 + Math.cos(angle) * radius, y: 200 + Math.sin(angle) * radius };
+});
+const middleMesh = Array.from({ length: 36 }, (_, i) => {
+  const angle = (i / 36) * Math.PI * 2;
+  const radius = 148 + Math.cos(i * 1.73) * 11;
+  return { x: 200 + Math.cos(angle) * radius, y: 200 + Math.sin(angle) * radius };
+});
+const edgeMesh = Array.from({ length: 72 }, (_, i) => {
+  const angle = (i / 72) * Math.PI * 2;
+  const radius = 192 + Math.sin(i * 1.31) * 4;
+  return { x: 200 + Math.cos(angle) * radius, y: 200 + Math.sin(angle) * radius };
+});
+
+// Points stables pour dessiner un réseau sphérique, façon cartographie holographique.
+const networkNodes = Array.from({ length: 58 }, (_, i) => {
+  const angle = i * 2.399963;
+  const radius = 132 * Math.sqrt((i + 0.5) / 58);
+  const x = 200 + Math.cos(angle) * radius;
+  const y = 200 + Math.sin(angle) * radius;
+  const z = Math.sqrt(Math.max(0, 1 - (radius / 142) ** 2));
+  return { x, y, z };
+});
+const networkLinks = networkNodes.flatMap((node, i) =>
+  networkNodes
+    .slice(i + 1)
+    .map((other, offset) => ({ i, j: i + offset + 1, distance: Math.hypot(node.x - other.x, node.y - other.y) }))
+    .filter((link) => link.distance < 43),
+);
 
 /** Convertit un angle en degrés en coordonnées x / y sur un cercle. */
 const polar = (cx: number, cy: number, r: number, deg: number) => {
@@ -40,15 +69,50 @@ export function ArcReactor({ thinking = false }: { thinking?: boolean }) {
   return (
     <div
       className={cn(
-        "reactor-mauve relative mx-auto aspect-square w-full max-w-155 transition-transform duration-700 ease-out",
-        thinking && "hud-breathe",
+        "hud-reactor relative mx-auto aspect-square w-full max-w-155",
+        thinking && "hud-reactor-thinking hud-thinking",
       )}
     >
-      {/* halos */}
-      <div className="absolute inset-[20%] rounded-full bg-primary/20 blur-3xl hud-pulse" />
-      <div className="absolute inset-[34%] rounded-full bg-accent/20 blur-2xl hud-pulse" />
+      {/* Sphère cartographique et noyau lumineux, inspirés de la référence. */}
+      <div className={cn("absolute inset-[17%] rounded-full blur-3xl hud-pulse", thinking ? "bg-violet-500/20" : "bg-sky-500/10")} />
+      <div className={cn("absolute inset-[31%] rounded-full blur-2xl hud-pulse", thinking ? "bg-indigo-300/35" : "bg-cyan-300/20")} />
+      <svg viewBox="0 0 400 400" className={cn("hud-globe absolute inset-[12%] h-[76%] w-[76%] overflow-visible", thinking && "hud-globe-thinking")} aria-hidden="true">
+        <defs>
+          <radialGradient id="globe-fill" cx="38%" cy="34%" r="70%">
+            <stop offset="0%" stopColor="oklch(0.78 0.14 215)" stopOpacity="0.2" />
+            <stop offset="62%" stopColor="oklch(0.35 0.12 235)" stopOpacity="0.09" />
+            <stop offset="100%" stopColor="oklch(0.2 0.08 250)" stopOpacity="0.02" />
+          </radialGradient>
+          <clipPath id="globe-clip"><circle cx="200" cy="200" r="142" /></clipPath>
+          <filter id="node-glow" x="-300%" y="-300%" width="700%" height="700%">
+            <feGaussianBlur stdDeviation="2.4" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+        <g className={cn("hud-globe-content", thinking && "hud-globe-content-thinking")}>
+        <circle cx="200" cy="200" r="142" fill="url(#globe-fill)" stroke="oklch(0.78 0.14 215 / 55%)" strokeWidth="1.5" />
+        <g clipPath="url(#globe-clip)" fill="none" stroke="oklch(0.68 0.16 195 / 30%)">
+          <ellipse cx="200" cy="200" rx="138" ry="48" />
+          <ellipse cx="200" cy="200" rx="138" ry="92" />
+          <ellipse cx="200" cy="200" rx="62" ry="138" />
+          <ellipse cx="200" cy="200" rx="108" ry="138" />
+          {networkLinks.map(({ i, j }) => (
+            <line key={`${i}-${j}`} x1={networkNodes[i].x} y1={networkNodes[i].y} x2={networkNodes[j].x} y2={networkNodes[j].y} opacity={0.18 + Math.min(networkNodes[i].z, networkNodes[j].z) * 0.48} />
+          ))}
+        </g>
+        <g filter="url(#node-glow)">
+          {networkNodes.map(({ x, y, z }, i) => (
+            <circle key={i} cx={x} cy={y} r={i % 9 === 0 ? 3.2 : 1.6} fill={i % 11 === 0 ? "oklch(0.74 0.14 52)" : "oklch(0.78 0.14 215)"} opacity={0.28 + z * 0.7} />
+          ))}
+        </g>
+        <circle cx="200" cy="200" r="63" fill="oklch(0.68 0.16 195 / 13%)" stroke="oklch(0.78 0.14 215 / 65%)" strokeWidth="1.5" />
+        <circle cx="200" cy="200" r="52" fill="url(#globe-fill)" stroke="oklch(0.83 0.11 200 / 55%)" strokeWidth="1" />
+        <circle cx="200" cy="200" r="38" fill="oklch(0.78 0.14 215 / 22%)" className={cn("hud-core-light", thinking && "hud-core-light-thinking")} />
+        <circle cx="200" cy="200" r="23" fill="oklch(0.88 0.1 200 / 45%)" />
+        </g>
+      </svg>
 
-      {/* anneau externe : micro-graduations */}
+      {/* Anneau à l'extrémité : graduations légères et maillage de points reliés. */}
       <div className="spin-reverse absolute inset-0" style={spinStyle}>
         <svg viewBox="0 0 400 400" className="block h-full w-full overflow-visible">
           {micro.map((i) => {
@@ -68,6 +132,21 @@ export function ArcReactor({ thinking = false }: { thinking?: boolean }) {
               />
             );
           })}
+          <g fill="none" className={thinking ? "hud-edge-thinking" : ""} strokeWidth="0.8">
+            {edgeMesh.map((point, i) => {
+              const next = edgeMesh[(i + 1) % edgeMesh.length];
+              const across = edgeMesh[(i + 5) % edgeMesh.length];
+              return (
+                <g key={i}>
+                  <line x1={point.x} y1={point.y} x2={next.x} y2={next.y} className="stroke-primary/35" />
+                  {i % 2 === 0 ? <line x1={point.x} y1={point.y} x2={across.x} y2={across.y} className="stroke-accent/40" /> : null}
+                </g>
+              );
+            })}
+          </g>
+          {edgeMesh.map((point, i) => (
+            <circle key={`edge-${i}`} cx={point.x} cy={point.y} r={i % 9 === 0 ? 2.4 : 1.25} className={i % 12 === 0 ? "fill-[oklch(0.74_0.14_52)]" : "fill-primary/75"} />
+          ))}
           <path
             d={arc(180, 12, 96)}
             fill="none"
@@ -82,62 +161,48 @@ export function ArcReactor({ thinking = false }: { thinking?: boolean }) {
             strokeWidth="3"
             strokeLinecap="round"
           />
-          <circle
-            cx="200"
-            cy="200"
-            r="172"
-            fill="none"
-            className="stroke-primary/20"
-            strokeWidth="1"
-            strokeDasharray="1 7"
-          />
         </svg>
       </div>
 
-      {/* blocs de données */}
+      {/* Couronne externe en réseau, avec des mailles fines plutôt que des blocs. */}
       <div className="spin-slow absolute inset-[5%]" style={spinStyle}>
-        <svg viewBox="0 0 400 400" className="block h-full w-full overflow-visible">
-          {blocks.map((i) => {
-            const deg = (i / blocks.length) * 360;
-            const [x, y] = polar(200, 200, 176, deg);
-            return (
-              <g key={i} transform={`rotate(${deg} ${x} ${y})`}>
-                <rect
-                  x={x - 11}
-                  y={y - 4}
-                  width={i % 3 === 0 ? 22 : 12}
-                  height="8"
-                  rx="1"
-                  className={i % 3 === 0 ? "fill-accent/60" : "fill-primary/25"}
-                />
-              </g>
-            );
-          })}
+        <svg viewBox="0 0 400 400" className="block h-full w-full overflow-visible" aria-hidden="true">
+          <g fill="none" className="stroke-primary/25" strokeWidth="0.8">
+            {outerMesh.map((point, i) => {
+              const next = outerMesh[(i + 1) % outerMesh.length];
+              const skip = outerMesh[(i + 4) % outerMesh.length];
+              return (
+                <g key={i}>
+                  <line x1={point.x} y1={point.y} x2={next.x} y2={next.y} />
+                  {i % 2 === 0 ? <line x1={point.x} y1={point.y} x2={skip.x} y2={skip.y} className="stroke-accent/25" /> : null}
+                </g>
+              );
+            })}
+          </g>
+          {outerMesh.map((point, i) => (
+            <circle key={i} cx={point.x} cy={point.y} r={i % 6 === 0 ? 2.2 : 1.1} className={i % 9 === 0 ? "fill-accent/80" : "fill-primary/65"} />
+          ))}
         </svg>
       </div>
 
-      {/* anneau segmenté */}
+      {/* Deuxième couronne maillée, légèrement décalée pour créer de la profondeur. */}
       <div className="spin-fast absolute inset-[10%]" style={spinStyle}>
-        <svg viewBox="0 0 400 400" className="block h-full w-full overflow-visible">
-          {segments.map((i) => {
-            const deg = (i / segments.length) * 360;
-            const [x, y] = polar(200, 200, 160, deg);
-            return (
-              <rect
-                key={i}
-                x={x - 10}
-                y={y - 6}
-                width="20"
-                height="12"
-                rx="1.5"
-                transform={`rotate(${deg} ${x} ${y})`}
-                className={i % 4 === 0 ? "fill-primary/55" : "fill-primary/12"}
-                stroke="currentColor"
-                strokeWidth="0.7"
-                style={{ color: "var(--hud-amber)", opacity: 0.85 }}
-              />
-            );
-          })}
+        <svg viewBox="0 0 400 400" className="block h-full w-full overflow-visible" aria-hidden="true">
+          <g fill="none" className="stroke-accent/35" strokeWidth="1">
+            {middleMesh.map((point, i) => {
+              const next = middleMesh[(i + 1) % middleMesh.length];
+              const across = middleMesh[(i + 5) % middleMesh.length];
+              return (
+                <g key={i}>
+                  <line x1={point.x} y1={point.y} x2={next.x} y2={next.y} />
+                  {i % 3 === 0 ? <line x1={point.x} y1={point.y} x2={across.x} y2={across.y} className="stroke-primary/35" /> : null}
+                </g>
+              );
+            })}
+          </g>
+          {middleMesh.map((point, i) => (
+            <circle key={i} cx={point.x} cy={point.y} r={i % 6 === 0 ? 2.5 : 1.35} className={i % 10 === 0 ? "fill-[oklch(0.74_0.14_52)]" : "fill-primary/75"} />
+          ))}
           <path
             d={arc(140, 150, 330)}
             fill="none"
@@ -211,16 +276,12 @@ export function ArcReactor({ thinking = false }: { thinking?: boolean }) {
         </svg>
       </div>
 
-      {/* cœur */}
-      <div className="absolute inset-[38%] rounded-full border border-accent/50 bg-[radial-gradient(circle,oklch(0.74_0.14_315/35%),oklch(0.66_0.15_295/12%)_55%,transparent_75%)]" />
-      <div className="absolute inset-[44%] rounded-full border border-primary/70 hud-pulse" />
-
-      <div className="absolute inset-0 grid place-content-center text-center">
-        <p className="font-display text-2xl font-black tracking-[0.35em] sm:text-3xl text-primary hud-glow">
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+        <p className="font-display text-sm font-black tracking-[0.22em] text-white hud-glow sm:text-base">
           J.A.R.V.I.S
         </p>
-        <p className="mt-2 text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
-          {thinking ? "Réflexion en cours" : "Système en ligne"}
+        <p className={cn("absolute top-[57%] text-[9px] uppercase tracking-[0.3em]", thinking ? "hud-thinking-label" : "text-primary/90")}>
+          {thinking ? "Réflexion" : "Système en ligne"}
         </p>
       </div>
     </div>

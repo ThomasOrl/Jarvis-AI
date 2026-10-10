@@ -193,11 +193,11 @@ export function JarvisChat({
     <div className="w-full">
       {/* ---------- Accueil, puis historique des messages ---------- */}
       {messages.length === 0 ? (
-        <p className="animate-fade-in text-center font-display text-base font-bold uppercase tracking-[0.3em] text-primary hud-glow sm:text-lg">
+        <p className="animate-fade-in px-3 text-center font-sans text-lg font-medium leading-relaxed text-foreground sm:text-xl">
           Bonjour Monsieur... Comment puis-je vous aider aujourd'hui ?
         </p>
       ) : (
-        <div ref={scrollRef} className="max-h-95 space-y-4 overflow-y-auto pr-1 text-left">
+        <div ref={scrollRef} className="max-h-[min(60vh,38rem)] space-y-6 overflow-y-auto px-2 py-2 text-left sm:space-y-8 sm:px-4">
           {messages.map((message) => {
             const text = messageText(message);
             if (!text) return null;
@@ -209,14 +209,17 @@ export function JarvisChat({
               >
                 <div
                   className={cn(
-                    "max-w-[85%] border-l px-4 py-2 text-sm leading-relaxed",
+                    "max-w-[94%] rounded-2xl border px-5 py-4 font-sans text-[15px] leading-7 shadow-lg shadow-black/10 sm:px-6 sm:py-5 sm:text-base sm:leading-8",
                     mine
-                      ? "border-primary/50 text-muted-foreground"
-                      : "border-accent/50 text-foreground",
+                      ? "max-w-[82%] rounded-tr-sm border-primary/25 bg-primary/[0.09] text-foreground"
+                      : "rounded-tl-sm border-white/[0.08] bg-white/[0.035] text-foreground",
                   )}
                 >
+                  <p className="mb-2 font-display text-[9px] font-semibold uppercase tracking-[0.22em] text-primary/75">
+                    {mine ? "Vous" : "J.A.R.V.I.S"}
+                  </p>
                   {/* Les réponses peuvent contenir du markdown (listes, code). */}
-                  <div className="prose prose-sm max-w-none prose-invert prose-p:my-1.5 prose-headings:text-primary prose-a:text-primary prose-strong:text-primary prose-code:text-accent">
+                  <div className="prose max-w-none font-sans text-[15px] leading-7 prose-invert prose-p:my-3 prose-p:leading-7 prose-headings:mb-3 prose-headings:mt-5 prose-headings:font-sans prose-headings:text-primary prose-a:text-primary prose-strong:text-foreground prose-code:text-accent prose-li:my-1.5 sm:text-base sm:leading-8 sm:prose-p:leading-8">
                     <ReactMarkdown>{text}</ReactMarkdown>
                   </div>
                 </div>
@@ -225,8 +228,8 @@ export function JarvisChat({
           })}
 
           {busy ? (
-            <p className="font-display text-[10px] uppercase tracking-[0.35em] text-primary hud-pulse">
-              Réflexion…
+            <p className="px-2 font-sans text-sm font-medium text-primary hud-pulse">
+              Jarvis prépare sa réponse…
             </p>
           ) : null}
         </div>
@@ -239,10 +242,10 @@ export function JarvisChat({
           submit(input);
         }}
         className={cn(
-          "group mt-6 flex items-end gap-2 border-b bg-transparent px-1 py-2 transition-all duration-300",
+          "group mt-8 flex items-end gap-3 rounded-2xl border bg-background/70 px-3 py-3 shadow-[0_12px_36px_oklch(0.02_0.04_250/25%)] backdrop-blur-md transition-all duration-300 sm:px-4",
           recording
-            ? "border-accent/70"
-            : "border-primary/25 hover:border-primary/60 focus-within:border-primary",
+            ? "border-accent/70 shadow-[0_0_24px_oklch(0.68_0.16_195/14%)]"
+            : "border-primary/20 hover:border-primary/40 focus-within:border-primary/55",
         )}
       >
         <textarea
@@ -258,7 +261,7 @@ export function JarvisChat({
           }}
           rows={1}
           placeholder={recording ? "Je vous écoute, Monsieur…" : "Posez votre question…"}
-          className="max-h-45 min-h-10 flex-1 resize-none bg-transparent px-1 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none"
+          className="max-h-45 min-h-12 flex-1 resize-none bg-transparent px-2 py-2 font-sans text-base leading-relaxed text-foreground placeholder:text-muted-foreground/80 focus-visible:outline-none"
         />
 
         {/* Micro : démarre / arrête la dictée */}
@@ -320,7 +323,7 @@ export function JarvisChat({
           disabled={busy || !input.trim()}
           aria-label="Envoyer"
           title="Envoyer"
-          className="grid h-9 w-9 shrink-0 place-content-center rounded-full text-primary transition-all duration-300 hover:scale-110 hover:bg-primary/10 hover:shadow-[0_0_18px_oklch(0.74_0.14_315/25%)] disabled:opacity-30 disabled:hover:scale-100"
+          className="grid h-9 w-9 shrink-0 place-content-center rounded-full text-primary transition-all duration-300 hover:scale-110 hover:bg-primary/10 hover:shadow-[0_0_18px_oklch(0.78_0.14_215/25%)] disabled:opacity-30 disabled:hover:scale-100"
         >
           {busy ? (
             <Loader2 className="h-4 w-4 animate-spin" />

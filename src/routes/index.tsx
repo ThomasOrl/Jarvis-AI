@@ -80,7 +80,22 @@ function Home() {
     : "";
 
   return (
-    <main className="min-h-screen px-4 py-6 md:px-8">
+    <main className="relative z-[1] min-h-screen px-4 py-6 md:px-8">
+      <div className="hud-network-backdrop" aria-hidden="true">
+        <svg viewBox="0 0 1440 1000" preserveAspectRatio="xMidYMid slice">
+          <g className="hud-backdrop-links">
+            <path d="M40 180 220 110 390 240 570 120 770 225 980 110 1190 250 1400 140M0 570 190 430 390 590 600 410 820 580 1040 390 1240 560 1440 420M160 900 340 740 550 870 760 690 960 850 1160 700 1370 900M220 110 190 430 390 590 340 740M570 120 600 410 550 870M980 110 1040 390 960 850M1190 250 1240 560 1160 700" />
+          </g>
+          <g className="hud-backdrop-nodes">
+            <circle cx="220" cy="110" r="3" /><circle cx="390" cy="240" r="2" />
+            <circle cx="770" cy="225" r="3" /><circle cx="1190" cy="250" r="3" />
+            <circle cx="190" cy="430" r="3" /><circle cx="600" cy="410" r="2" />
+            <circle cx="820" cy="580" r="3" /><circle cx="1240" cy="560" r="2" />
+            <circle cx="340" cy="740" r="2" /><circle cx="760" cy="690" r="3" />
+            <circle cx="1160" cy="700" r="2" />
+          </g>
+        </svg>
+      </div>
       {/* ---------- En-tête : identité à gauche, horloge à droite ---------- */}
       <header className="mx-auto flex max-w-375 items-center justify-between border-b border-primary/20 pb-4">
         <div className="flex items-center gap-3">
