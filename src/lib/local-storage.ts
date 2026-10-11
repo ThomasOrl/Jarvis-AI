@@ -27,3 +27,13 @@ export function writeJson(key: string, value: unknown): void {
     /* quota atteint ou stockage refusé : on ignore, ce n'est pas critique */
   }
 }
+
+/** Supprime une préférence mémorisée sans faire échouer l'application. */
+export function removeJson(key: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    /* stockage indisponible : aucune action */
+  }
+}

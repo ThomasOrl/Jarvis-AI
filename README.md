@@ -27,6 +27,18 @@ Important : après toute modification du `.env`, arrêtez le serveur (Ctrl+C) et
 
 Pour changer de fournisseur (Groq, OpenRouter, Ollama, OpenAI), voir `.env.example`.
 
+## Historique et compte Google
+
+Sans connexion, les conversations restent dans le stockage local du navigateur. Une fois connecté, J.A.R.V.I.S les synchronise dans son espace privé de données sur Google Drive (`appDataFolder`). Le jeton Google reste dans la mémoire de l'onglet : il faut se reconnecter après avoir rechargé ou fermé la page.
+
+Pour activer cette fonction :
+
+1. Dans Google Cloud Console, activez l'API Google Drive et configurez l'écran de consentement OAuth.
+2. Créez un identifiant OAuth de type **Application Web** et ajoutez les origines autorisées, par exemple `http://localhost:8080` et l'URL de production.
+3. Ajoutez `VITE_GOOGLE_CLIENT_ID=...` au `.env` local et aux variables d'environnement du déploiement. Le modèle est dans `.env.example`.
+
+Au premier branchement d'un compte sans archive Drive existante, l'historique local du navigateur est importé dans son espace Google privé.
+
 ## Voix
 
 - La lecture à voix haute fonctionne d'office avec la voix du navigateur (gratuite) — bouton haut-parleur.

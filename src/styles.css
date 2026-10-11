@@ -176,6 +176,117 @@
   clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
 }
 
+/* Panneaux latéraux : télémétrie compacte, calée sur le HUD central. */
+.hud-rail-header {
+  position: relative;
+  min-height: 3.75rem;
+}
+
+.hud-dashboard-rail {
+  position: relative;
+  padding-left: 0.45rem;
+}
+
+.hud-dashboard-rail::before {
+  position: absolute;
+  top: 4.15rem;
+  bottom: 1.65rem;
+  left: 0;
+  width: 1px;
+  background: linear-gradient(180deg, oklch(0.78 0.14 215 / 55%), oklch(0.78 0.14 215 / 12%) 70%, transparent);
+  content: "";
+}
+
+.hud-rail-emblem,
+.hud-widget-icon {
+  box-shadow: inset 0 0 14px oklch(0.78 0.14 215 / 10%), 0 0 14px oklch(0.78 0.14 215 / 6%);
+}
+
+.hud-rail-header::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  width: 28%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, oklch(0.78 0.14 215 / 78%));
+  content: "";
+}
+
+.hud-widget-card {
+  isolation: isolate;
+  overflow: hidden;
+  border: 0;
+  clip-path: none;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  text-wrap: pretty;
+}
+
+.hud-widget-card:hover {
+  background: radial-gradient(ellipse at 60% 50%, oklch(0.52 0.14 205 / 7%), transparent 76%);
+}
+
+.hud-widget-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hud-widget-data {
+  background-image: linear-gradient(90deg, transparent 0 96%, oklch(0.78 0.14 215 / 8%) 96% 96.5%, transparent 96.5%);
+}
+
+.hud-radar-sweep {
+  transform-box: view-box;
+  transform-origin: 40px 40px;
+  animation: hud-spin 8s linear infinite;
+  filter: drop-shadow(0 0 3px oklch(0.78 0.14 215 / 80%));
+}
+
+.hud-agenda-spine {
+  position: absolute;
+  top: 0.35rem;
+  bottom: 0.4rem;
+  left: 0.25rem;
+  width: 1px;
+  background: linear-gradient(180deg, oklch(0.78 0.14 215 / 50%), oklch(0.78 0.14 215 / 10%));
+}
+
+.hud-agenda-node {
+  position: absolute;
+  left: -0.95rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border: 1px solid oklch(0.78 0.14 215 / 65%);
+  border-radius: 9999px;
+  background: oklch(0.08 0.025 245);
+}
+
+.hud-agenda-node-active {
+  background: var(--primary);
+  box-shadow: 0 0 8px oklch(0.78 0.14 215 / 75%);
+}
+
+.hud-change-track {
+  display: block;
+  width: 1.25rem;
+  height: 2px;
+  flex: none;
+  overflow: hidden;
+  background: oklch(0.78 0.14 215 / 12%);
+}
+
+.hud-change-track > span {
+  display: block;
+  height: 100%;
+  transition: width 0.6s ease;
+}
+
+.hud-widget-card footer,
+.hud-rail-footer {
+  white-space: nowrap;
+}
+
 @utility hud-glow {
   text-shadow: var(--glow-cyan);
 }
@@ -322,6 +433,7 @@
   .hud-globe-thinking,
   .hud-globe-thinking g[clip-path] line,
   .hud-edge-thinking line,
+  .hud-radar-sweep,
   .hud-reactor::after,
   .hud-thinking-label,
   .hud-core-light,
