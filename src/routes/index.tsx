@@ -7,7 +7,7 @@
  * - `thinking`   : une réponse est en cours → le réacteur « respire ».
  * - `conversing` : la conversation a commencé → la zone de conversation s'élargit.
  */
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Github, Linkedin } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -151,9 +151,24 @@ function Home() {
         </section>
       </div>
 
-      {/* ---------- Pied de page : signature + LinkedIn ---------- */}
-      <footer className="mx-auto mt-12 flex max-w-[100rem] items-center justify-center gap-3 border-t border-primary/20 pt-4 text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+      <p className="mx-auto mt-10 max-w-[100rem] text-center text-xs leading-6 text-muted-foreground">
+        Assistant IA personnel : échangez par texte ou dictée vocale et retrouvez vos conversations
+        sur cet appareil ou dans votre espace privé Google Drive.
+      </p>
+
+      {/* ---------- Pied de page : signature, confidentialité et réseaux ---------- */}
+      <footer className="mx-auto mt-4 flex max-w-[100rem] flex-wrap items-center justify-center gap-3 border-t border-primary/20 pt-4 text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
         <span>© {new Date().getFullYear()} By ThomasOrls</span>
+        <span aria-hidden className="text-primary/50">
+          ·
+        </span>
+        <Link
+          to="/confidentialite"
+          className="transition-colors hover:text-primary"
+          aria-label="Politique de confidentialité de Jarvis"
+        >
+          Confidentialité
+        </Link>
         <span aria-hidden className="text-primary/50">
           ·
         </span>
