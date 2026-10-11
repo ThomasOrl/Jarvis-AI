@@ -67,11 +67,9 @@ function Home() {
   const time = now
     ? now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
     : "--:--:--";
-  const day = now ? now.toLocaleDateString("fr-FR", { weekday: "long" }) : "";
-  const date = now
-    ? now.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })
+  const day = now
+    ? now.toLocaleDateString("fr-FR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })
     : "";
-
   return (
     <main
       className={cn(
@@ -99,23 +97,14 @@ function Home() {
           </g>
         </svg>
       </div>
-      {/* ---------- En-tête : identité à gauche, horloge à droite ---------- */}
-      <header className="mx-auto flex max-w-[100rem] items-center justify-between border-b border-primary/20 pb-4">
-        <div className="ml-[1cm]">
-          <p className="font-display text-sm font-bold uppercase tracking-[0.4em] text-primary">
-            Jarvis
-          </p>
-          <p className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-            Just A Rather Very Intelligent System
-          </p>
-        </div>
-
+      {/* ---------- En-tête compact : horloge en haut à droite ---------- */}
+      <header className="mx-auto flex max-w-[100rem] justify-end">
         <div className="text-right">
           <p className="font-display text-2xl font-bold tabular-nums text-foreground hud-glow">
             {time}
           </p>
           <p className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
-            {day} {date}
+            {day}
           </p>
         </div>
       </header>
@@ -123,13 +112,13 @@ function Home() {
       {/* ---------- Corps : réacteur et conversation centrés ---------- */}
       <div
         className={cn(
-          "mt-10 flex w-full justify-center transition-[margin] duration-700",
+          "mt-4 flex w-full justify-center transition-[margin] duration-700",
           conversing && "mt-3",
         )}
       >
         <section
           className={cn(
-            "mx-auto flex w-full flex-col items-center gap-10 pt-6 transition-all duration-700 lg:pt-14",
+            "mx-auto flex w-full flex-col items-center gap-10 pt-1 transition-all duration-700 lg:pt-1",
             // La zone s'élargit dès que la conversation démarre, en gardant une largeur lisible.
             conversing ? "max-w-[72rem] gap-5 pt-0 lg:pt-4" : "max-w-225",
           )}

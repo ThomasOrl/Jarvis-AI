@@ -119,7 +119,8 @@ function loadGoogleArchive(email: string) {
     ? archive.conversations.filter(isSavedConversation)
     : [];
   const activeId =
-    typeof archive?.activeId === "string" && conversations.some((item) => item.id === archive.activeId)
+    typeof archive?.activeId === "string" &&
+    conversations.some((item) => item.id === archive.activeId)
       ? archive.activeId
       : (conversations[0]?.id ?? "");
   return { conversations, activeId };
@@ -193,7 +194,10 @@ function MarkdownPre({ children, ...props }: ComponentProps<"pre">) {
   const codeElement = Children.toArray(children).find(isValidElement);
   if (!codeElement) {
     return (
-      <pre {...props} className="my-5 overflow-x-auto border border-cyan-300/25 bg-[#031522]/95 p-4">
+      <pre
+        {...props}
+        className="my-5 overflow-x-auto border border-cyan-300/25 bg-[#031522]/95 p-4"
+      >
         {children}
       </pre>
     );
@@ -295,9 +299,7 @@ export function JarvisChat({
     const storedAccount = readJson<unknown>(GOOGLE_ACCOUNT_STORAGE_KEY, null);
     const rememberedAccount = isGoogleAccount(storedAccount) ? storedAccount : null;
     const rememberedArchive = rememberedAccount ? loadGoogleArchive(rememberedAccount.email) : null;
-    const initialArchive = rememberedArchive?.conversations.length
-      ? rememberedArchive
-      : archive;
+    const initialArchive = rememberedArchive?.conversations.length ? rememberedArchive : archive;
     const activeId = initialArchive.activeId || crypto.randomUUID();
     const active = initialArchive.conversations.find((item) => item.id === activeId);
     setConversations(initialArchive.conversations);
@@ -846,7 +848,11 @@ export function JarvisChat({
               disabled={authBusy || busy}
               className="mt-2 inline-flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider text-primary hover:text-foreground disabled:opacity-50"
             >
-              {authBusy ? <Loader2 className="h-3 w-3 animate-spin" /> : <LogIn className="h-3 w-3" />}
+              {authBusy ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <LogIn className="h-3 w-3" />
+              )}
               {forceGoogleConsent
                 ? "Réautoriser Google Drive"
                 : "Réautoriser Google pour synchroniser"}

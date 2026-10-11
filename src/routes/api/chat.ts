@@ -64,9 +64,15 @@ export const Route = createFileRoute("/api/chat")({
           system: SYSTEM_PROMPT,
           messages: await convertToModelMessages(messages),
           abortSignal: request.signal,
+          onError: ({ error }) => {
+            console.error("[api/chat] Échec du flux du fournisseur IA :", error);
+          },
         });
 
-        return result.toUIMessageStreamResponse({ originalMessages: messages });
+        return result.toUIMessageStreamResponse({
+          originalMessages: messages,
+          onError: () => "Jarvis n’a pas pu joindre le service IA. Réessayez dans un instant.",
+        });
       },
     },
   },
